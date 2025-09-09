@@ -527,41 +527,6 @@ conversation:
       }
     ]
 
-# 模型服务配置
-models:
-  # 大语言模型配置
-  - type: "chat"
-    source: "openai"
-    model_name: "deepseek-r1-0528-qwen3-8b"
-    parameters:
-      base_url: "http://182.150.53.174:8299/v1"
-      api_key: "gpustack_b6070f918c567789_afcdc50334379ffc928c3e36a6f3a12c"
-      temperature: 0.7
-      max_tokens: 2048
-      top_p: 1.0
-      frequency_penalty: 0.0
-      presence_penalty: 0.0
-
-  # 嵌入模型配置
-  - type: "embedding"
-    source: "openai"
-    model_name: "qwen3-embedding"
-    parameters:
-      base_url: "http://182.150.53.174:8299/v1"
-      api_key: "gpustack_b6070f918c567789_afcdc50334379ffc928c3e36a6f3a12c"
-      dimensions: 2560
-      encoding_format: "float"
-
-  # 重排序模型配置
-  - type: "rerank"
-    source: "openai"
-    model_name: "bge-reranker-v2-m3"
-    parameters:
-      base_url: "http://182.150.53.174:8299/v1"
-      api_key: "gpustack_b6070f918c567789_afcdc50334379ffc928c3e36a6f3a12c"
-      top_k: 10
-      return_documents: true
-
 # 知识库配置
 knowledge_base:
   chunk_size: 512
