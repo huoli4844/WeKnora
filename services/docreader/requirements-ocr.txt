@@ -1,0 +1,16 @@
+# OCR related dependencies (optional)
+# Install these only if OCR functionality is needed
+# Due to large package size and potential network issues, install separately:
+# pip install -r requirements-ocr.txt
+
+# Primary OCR package
+paddleocr>=2.10.0,<3.0.0
+
+# PaddlePaddle backend - use appropriate version
+# For CPU-only deployment:
+--extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cpu/
+paddlepaddle>=3.0.0,<4.0.0
+
+# For GPU deployment (uncomment if needed):
+# --extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cu126/
+# paddlepaddle-gpu>=3.0.0,<4.0.0

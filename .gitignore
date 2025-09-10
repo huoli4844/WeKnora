@@ -32,6 +32,7 @@ data/files/
 
 .python-version
 .venv/
+venv
 
 ### macOS
 # General

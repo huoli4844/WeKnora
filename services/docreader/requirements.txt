@@ -1,34 +1,45 @@
+# Core gRPC dependencies
 grpcio
 grpcio-tools
 protobuf
+
+# Document processing libraries
 python-docx
 PyPDF2
+pypdf
+pdfplumber
+docx2txt
+openpyxl
+python-magic
+antiword
+
+# Web scraping and parsing
 requests
 Pillow
 beautifulsoup4
 lxml
 playwright
-asyncio
-urllib3
 markdownify
 mistletoe
 goose3[all]
-paddleocr>=2.10.0,<3.0.0
 markdown
-pypdf
+
+# Networking and utilities
+asyncio
+urllib3
+
+# Cloud storage
 cos-python-sdk-v5
 minio
-# textract  # 替换为更稳定的文档解析库
-python-magic
-docx2txt
-openpyxl
-antiword
+
+# AI/ML services
 openai
 ollama
-pdfplumber
 
---extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cpu/
-paddlepaddle>=3.0.0,<4.0.0
+# OCR (optional - install separately if needed)
+# paddleocr>=2.10.0,<3.0.0
+# --extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cpu/
+# paddlepaddle>=3.0.0,<4.0.0
 
 # --extra-index-url https://www.paddlepaddle.org.cn/packages/stable/cu126/
 # paddlepaddle-gpu==3.0.0 
