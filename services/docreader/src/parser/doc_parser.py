@@ -7,7 +7,8 @@ import subprocess
 import shutil
 from io import BytesIO
 from typing import Optional, List, Tuple
-import textract
+# import textract  # 替换为更稳定的解决方案
+import magic
 from PIL import Image
 import zipfile
 import xml.etree.ElementTree as ET
@@ -102,18 +103,22 @@ class DocParser(BaseParser):
                             f"antiword extraction failed: {stderr.decode('utf-8', errors='ignore')}"
                         )
                 else:
-                    logger.warning("antiword not found, falling back to textract")
+                    logger.warning("antiword not found, falling back to alternative methods")
             except Exception as e:
                 logger.warning(
-                    f"Error using antiword: {str(e)}, falling back to textract"
+                    f"Error using antiword: {str(e)}, falling back to alternative methods"
                 )
 
-            # If antiword fails, try using textract
-            logger.info("Parsing DOC file with textract")
-            text = textract.process(temp_file_path, method="antiword").decode("utf-8")
-            logger.info(
-                f"Successfully extracted {len(text)} characters of text from DOC document using textract"
-            )
+            # 如果antiword失败，尝试使用替代方案
+            logger.info("尝试使用替代方案解析DOC文件")
+            text = self._extract_text_fallback(temp_file_path)
+            if text:
+                logger.info(
+                    f"使用替代方案成功提取{len(text)}个字符"
+                )
+            else:
+                logger.error("所有解析方法都失败了")
+                text = ""
 
             # Clean up temporary file
             os.unlink(temp_file_path)
@@ -227,8 +232,9 @@ class DocParser(BaseParser):
         ]
 
         # Check if path is set in environment variable
-        if os.environ.get("LIBREOFFICE_PATH"):
-            possible_paths.insert(0, os.environ.get("LIBREOFFICE_PATH"))
+        libreoffice_path = os.environ.get("LIBREOFFICE_PATH")
+        if libreoffice_path:
+            possible_paths.insert(0, libreoffice_path)
 
         for path in possible_paths:
             if os.path.exists(path):
@@ -267,8 +273,9 @@ class DocParser(BaseParser):
         ]
 
         # Check if path is set in environment variable
-        if os.environ.get("ANTIWORD_PATH"):
-            possible_paths.insert(0, os.environ.get("ANTIWORD_PATH"))
+        antiword_path = os.environ.get("ANTIWORD_PATH")
+        if antiword_path:
+            possible_paths.insert(0, antiword_path)
 
         for path in possible_paths:
             if os.path.exists(path):
@@ -289,6 +296,93 @@ class DocParser(BaseParser):
 
         logger.warning("antiword not found")
         return None
+
+    def _extract_text_fallback(self, doc_path: str) -> str:
+        """使用备用方案提取DOC文件文本
+        
+        Args:
+            doc_path: DOC文件路径
+            
+        Returns:
+            提取的文本内容
+        """
+        try:
+            # 尝试使用python-docx的替代方案
+            logger.info("尝试使用docx2txt处理DOC文件")
+            try:
+                import docx2txt
+                # 先尝试直接使用docx2txt（可能对某些DOC文件有效）
+                text = docx2txt.process(doc_path)
+                if text and text.strip():
+                    logger.info(f"docx2txt成功提取{len(text)}个字符")
+                    return text
+            except ImportError:
+                logger.warning("docx2txt不可用")
+            except Exception as e:
+                logger.warning(f"docx2txt处理失败: {str(e)}")
+            
+            # 尝试使用catdoc（另一个替代工具）
+            try:
+                logger.info("尝试使用catdoc提取文本")
+                result = subprocess.run(
+                    ["catdoc", doc_path], 
+                    capture_output=True, 
+                    text=True, 
+                    timeout=30
+                )
+                if result.returncode == 0 and result.stdout.strip():
+                    text = result.stdout
+                    logger.info(f"catdoc成功提取{len(text)}个字符")
+                    return text
+            except (subprocess.TimeoutExpired, FileNotFoundError, Exception) as e:
+                logger.warning(f"catdoc处理失败: {str(e)}")
+            
+            # 最后的备用方案：使用简单的二进制文本提取
+            logger.info("使用简单的二进制文本提取作为最后备用")
+            with open(doc_path, 'rb') as f:
+                content = f.read()
+                
+            # 尝试从二进制内容中提取可读文本
+            try:
+                # DOC文件中的文本通常以UTF-16或其他编码存储
+                import re
+                # 提取可打印字符，过滤控制字符
+                text_bytes = re.findall(rb'[\x20-\x7E\xA0-\xFF]{4,}', content)
+                text_parts = []
+                
+                for part in text_bytes:
+                    try:
+                        # 尝试不同的编码
+                        for encoding in ['utf-8', 'utf-16', 'cp1252', 'iso-8859-1']:
+                            try:
+                                decoded = part.decode(encoding, errors='ignore')
+                                if len(decoded.strip()) > 3:  # 只保留有意义的文本
+                                    text_parts.append(decoded)
+                                break
+                            except UnicodeDecodeError:
+                                continue
+                    except Exception:
+                        continue
+                
+                if text_parts:
+                    text = ' '.join(text_parts)
+                    # 清理文本
+                    text = re.sub(r'\s+', ' ', text)  # 合并多个空白字符
+                    text = text.strip()
+                    
+                    if len(text) > 50:  # 只有当提取到足够的文本时才返回
+                        logger.info(f"使用二进制提取方法成功提取{len(text)}个字符")
+                        return text
+                        
+            except Exception as e:
+                logger.warning(f"二进制文本提取失败: {str(e)}")
+            
+            logger.error("所有备用方案都失败了")
+            return ""
+            
+        except Exception as e:
+            logger.error(f"备用文本提取失败: {str(e)}")
+            return ""
 
 
 if __name__ == "__main__":

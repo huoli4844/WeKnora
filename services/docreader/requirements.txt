@@ -18,7 +18,10 @@ markdown
 pypdf
 cos-python-sdk-v5
 minio
-textract
+# textract  # 替换为更稳定的文档解析库
+python-magic
+docx2txt
+openpyxl
 antiword
 openai
 ollama
