@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import docreader_pb2 as docreader__pb2
+from proto import docreader_pb2 as proto_dot_docreader__pb2
 
 GRPC_GENERATED_VERSION = '1.74.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in docreader_pb2_grpc.py depends on'
+        + f' but the generated code in proto/docreader_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -37,13 +37,13 @@ class DocReaderStub(object):
         """
         self.ReadFromFile = channel.unary_unary(
                 '/docreader.DocReader/ReadFromFile',
-                request_serializer=docreader__pb2.ReadFromFileRequest.SerializeToString,
-                response_deserializer=docreader__pb2.ReadResponse.FromString,
+                request_serializer=proto_dot_docreader__pb2.ReadFromFileRequest.SerializeToString,
+                response_deserializer=proto_dot_docreader__pb2.ReadResponse.FromString,
                 _registered_method=True)
         self.ReadFromURL = channel.unary_unary(
                 '/docreader.DocReader/ReadFromURL',
-                request_serializer=docreader__pb2.ReadFromURLRequest.SerializeToString,
-                response_deserializer=docreader__pb2.ReadResponse.FromString,
+                request_serializer=proto_dot_docreader__pb2.ReadFromURLRequest.SerializeToString,
+                response_deserializer=proto_dot_docreader__pb2.ReadResponse.FromString,
                 _registered_method=True)
 
 
@@ -70,13 +70,13 @@ def add_DocReaderServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'ReadFromFile': grpc.unary_unary_rpc_method_handler(
                     servicer.ReadFromFile,
-                    request_deserializer=docreader__pb2.ReadFromFileRequest.FromString,
-                    response_serializer=docreader__pb2.ReadResponse.SerializeToString,
+                    request_deserializer=proto_dot_docreader__pb2.ReadFromFileRequest.FromString,
+                    response_serializer=proto_dot_docreader__pb2.ReadResponse.SerializeToString,
             ),
             'ReadFromURL': grpc.unary_unary_rpc_method_handler(
                     servicer.ReadFromURL,
-                    request_deserializer=docreader__pb2.ReadFromURLRequest.FromString,
-                    response_serializer=docreader__pb2.ReadResponse.SerializeToString,
+                    request_deserializer=proto_dot_docreader__pb2.ReadFromURLRequest.FromString,
+                    response_serializer=proto_dot_docreader__pb2.ReadResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -105,8 +105,8 @@ class DocReader(object):
             request,
             target,
             '/docreader.DocReader/ReadFromFile',
-            docreader__pb2.ReadFromFileRequest.SerializeToString,
-            docreader__pb2.ReadResponse.FromString,
+            proto_dot_docreader__pb2.ReadFromFileRequest.SerializeToString,
+            proto_dot_docreader__pb2.ReadResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -132,8 +132,8 @@ class DocReader(object):
             request,
             target,
             '/docreader.DocReader/ReadFromURL',
-            docreader__pb2.ReadFromURLRequest.SerializeToString,
-            docreader__pb2.ReadResponse.FromString,
+            proto_dot_docreader__pb2.ReadFromURLRequest.SerializeToString,
+            proto_dot_docreader__pb2.ReadResponse.FromString,
             options,
             channel_credentials,
             insecure,

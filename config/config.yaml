@@ -3,6 +3,18 @@ server:
   port: 8080
   host: "0.0.0.0"
 
+# 数据库配置
+database:
+  driver: ${DB_DRIVER:postgres}
+  host: ${DB_HOST:localhost}
+  port: ${DB_PORT:5432}
+  user: ${DB_USER:weknora}
+  password: ${DB_PASSWORD:weknora_password}
+  dbname: ${DB_NAME:weknora_db}
+  sslmode: disable
+  max_idle_conns: 10
+  conn_max_lifetime: 600  # 10分钟
+
 # 对话服务配置
 conversation:
   max_rounds: 5
@@ -561,6 +573,13 @@ models:
       api_key: "gpustack_b6070f918c567789_afcdc50334379ffc928c3e36a6f3a12c"
       top_k: 10
       return_documents: true
+
+# 文档解析服务配置
+docreader:
+  addr: "localhost:50051"
+  timeout: "30s"
+  max_file_size: "50MB"
+  supported_formats: ["pdf", "docx", "doc", "txt", "md", "html"]
 
 # 知识库配置
 knowledge_base:
